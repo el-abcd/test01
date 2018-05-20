@@ -10,6 +10,8 @@ For example: if the string was: 123412345123456 then the function/program would 
 
 """
 
+import time
+
 s = '123412345123456'
 
 
@@ -27,6 +29,6 @@ def cntRpt(str_in):
         if d[a] > 1:
             print("key: {}, cnt: {}".format(a, d[a]))
     # print(d)
-
+    time.sleep(1)
 
 cntRpt(s)
