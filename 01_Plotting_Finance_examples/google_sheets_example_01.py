@@ -97,3 +97,5 @@ elif task == 'write_a_new_sheet':
     worksheet.update_cells(cell_list)
     print("Go to https://sheets.google.com to see your new spreadsheet (named '{}').".format(sheet_name))
     print("Worksheet id is: {}".format(sh.id))
+
+# Is some thread still running at this point?? Debugger seemed to think so!
