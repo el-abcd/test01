@@ -31,5 +31,6 @@ for cnt, i in enumerate(c[0]):
         c2 += 1
         print(i)
 
+
 print cnt
 print c2
