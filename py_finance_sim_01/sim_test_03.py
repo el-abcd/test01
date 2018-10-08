@@ -3,6 +3,7 @@ from dateutil.relativedelta import relativedelta  # To increment dates by a mont
 import decimal
 
 import numpy as np
+import pandas as pd
 import simpy
 
 # Try to simulate a mortgage!!!
@@ -92,6 +93,23 @@ class mortgage_simple(object):
         # Create a "process" that knows how to calculate the next monthly payment.
         self.mortgage_process = env.process(self.monthly_payment())
 
+        # Create dataframe to store the history of this particular account.
+        # NOTE: should have some "standard" columns (date, comment, amt) so can easily combine with OTHER
+        # accounts.
+        # Note: put in a date column, just use an integer index to start...
+        # columns = ["date","princ_pay","int_pay","extra_fee_pay","balance"]
+        # init_data = [pd.Timestamp(start_date), dollar(0), dollar(0), dollar(0), dollar(loan_amount)]
+        # TODO: maybe initialize from something besides a dict, to control the column order better?
+        self.mort_account = pd.DataFrame({
+            "date": [pd.Timestamp(start_date)], # Make a list, so at least one element is non-scalar! Pandas error otherwise.
+            "princ_pay": dollar(0),
+            "int_pay": dollar(0),
+            "extra_fee_pay": dollar(0),
+            "balance": dollar(loan_amount)
+        })
+
+        print self.mort_account
+        #raise("testing")
 
     #ToDo: HOW to handle float * Decimal calculations?
         # Convert back to decimal ONLY when displaying results (trim to 2 digits).
@@ -106,7 +124,7 @@ class mortgage_simple(object):
             # Add a timeout for the next monthly payment!!!
             # WAIT for the end of the month, THEN do the calculations!!!
             next_month_timestamp = timestamp(datetime.date.fromtimestamp(self.env.now) + relativedelta(months=+1) )
-            print("Now is: {}".format(self.env.now))
+            print("Now is: {}, {}".format(self.env.now, datetime.date.fromtimestamp(self.env.now)))
             self.payment_number += 1
             print("Iteration is: {}".format(self.payment_number))
             #print("Next timestamp: {}".format(next_month_timestamp))
@@ -117,25 +135,45 @@ class mortgage_simple(object):
             yield self.env.timeout( delta )
 
 
+            # WAKE UP AND DO CALCULATIONS FOR THIS DATE/PAYMENT!
             # pre_amt = float(self.amount()) * self.rate() / (float(MONTHS_IN_YEAR) * (1.-(1./self.month_growth()) ** self.loan_months()))
             # return dollar(pre_amt, round=decimal.ROUND_CEILING)
-            print("Time is {}, {}".format(self.env.now, datetime.date.fromtimestamp(self.env.now)))
+            print("Woke up at: {}, {}".format(self.env.now, datetime.date.fromtimestamp(self.env.now)))
             # ToDo: If made an extra payment partially thru the month maybe calculate interest daily?
             # Calculate values from last month payment, instead of using amortizaion
             # table, to account for any "extra payments".
             interest_pay = -1 * float(self.principal) * self._interest_monthly
-            self.principal += (self.monthly_payment_amt - interest_pay)
+            principal_pay = (self.monthly_payment_amt - interest_pay)
+            self.principal += dollar(principal_pay)
             if self.principal <= 0.01:
                 print("Negative principal, loan is paid off! Final principal is: {}".format(self.principal))
+                print self.mort_account
+                pl
                 self.env.exit(0) # End the process by returning!
             #self.payment_number += 1
             print("Interest: {}".format(interest_pay))
             print("Remaining Principal: {}".format(self.principal))
             print("____")
 
+            #ADD A NEW ROW TO THE DATAFRAME!
+            #Todo: add a class for a row in the mortgage? Or just make a dict as needed?
+            # Class might be NICE, if put all the dollar conversion in there!!!
+            new_row= {
+                "date": datetime.date.fromtimestamp(self.env.now),
+                "princ_pay": dollar(principal_pay),
+                "int_pay": dollar(interest_pay),
+                "extra_fee_pay": dollar(0),
+                "balance": self.principal
+                }
+            #TODO: This creates a new object, then REPLACES the old one.
+            # Maybe pandas.concat() is more efficient (does an "in-place" update?
+            # Or, maybe should generate a list, and only occasionally update the dataframe?
+            # i.e. I guess due to fixed size it is not optimized for growing, need to realloc memory often?  Or
+            # does it allocate some extra space for growth??
+            self.mort_account = self.mort_account.append(new_row, ignore_index=True)
 
-            #yield self.env.timeout( timestamp( datetime.date.fromtimestamp(self.env.now) + relativedelta(months=+1)) - datetime.date.fromtimestamp(self.env.now))
             print("Mortgage update DONE")
+            #print(self.mort_account)
 
 # TODO: Get decimals working right!
 # But, overall
@@ -156,7 +194,6 @@ dt = datetime.date.today()
 #     # Insurance
 #     # HOA
 #     pass
-
 
 
 env = simpy.Environment(initial_time=timestamp(datetime.date.today()))
