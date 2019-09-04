@@ -1,5 +1,5 @@
 import datetime
-from dateutil.relativedelta import relativedelta  # To increment dates by a month, etc.
+#from dateutil.relativedelta import relativedelta  # To increment dates by a month, etc.
 import decimal
 
 import numpy as np
@@ -108,7 +108,7 @@ class mortgage_simple(object):
             "balance": dollar(loan_amount)
         })
 
-        print self.mort_account
+        print(self.mort_account)
         #raise("testing")
 
     #ToDo: HOW to handle float * Decimal calculations?
@@ -148,7 +148,7 @@ class mortgage_simple(object):
             self.principal += dollar(principal_pay)
             if self.principal <= 0.01:
                 print("Negative principal, loan is paid off! Final principal is: {}".format(self.principal))
-                print self.mort_account
+                print(self.mort_account)
 
                 self.env.exit(0) # End the process by returning!
             #self.payment_number += 1
@@ -212,7 +212,7 @@ class Inv_03l_SchneidersSaddlery(object):
         """
 
 
-        self.start_date = datetime.date(2019, 05, 23)
+        self.start_date = datetime.date(2019, 5, 23)
         self.inv_initial = 150000
         self.capital_account = self.inv_initial #Start at initial investment amount.
         self.duration_expected = datetime.timedelta(5*365)  # "Target Hold Period: 5 to 7 years from closing"
@@ -296,7 +296,7 @@ class Inv_03l_SchneidersSaddlery(object):
             def __repr__(self):
                 return '{}, {}'.format(self.date, self.amount)
 
-        self.pref_table = [
+        pref_table_raw = [
             #Year 1, 8% pref
             # 7/30/2019	Saddle Investmen Ach Pmt x x6780 Q2 2019 Distribution		$923.08	PREFERRED CHECKING	xxxx1428	Wells Fargo
             # This appears to be a 364 day year?  923.08 / (150000*0.08 / 364) = 28.0000933333 days.  If I use 365 it is 28.077.
@@ -336,53 +336,64 @@ class Inv_03l_SchneidersSaddlery(object):
             trans('2023-07-15', calc_pref(0.095, False, '2023-04-01', '2023-06-03', 364)), # 04-01 thru 06-03
 
             # 5th year and later, always 10% pref.
-            trans('2023-07-15', calc_pref(0.010, False, '2022-06-03', '2022-07-01', 364)), # New pref rate.
-            trans('2023-10-15', calc_pref(0.010, True)),  # 07-01 thru 10-01
-            trans('2024-01-15', calc_pref(0.010, True)),  # 10-01 thru 01-01
-            trans('2024-04-15', calc_pref(0.010, True)),  # 01-01 thru 04-01
-            trans('2024-07-15', calc_pref(0.010, True)),  # 04-01 thru 07-01
+            trans('2023-07-15', calc_pref(0.100, False, '2022-06-03', '2022-07-01', 364)), # New pref rate.
+            trans('2023-10-15', calc_pref(0.100, True)),  # 07-01 thru 10-01
+            trans('2024-01-15', calc_pref(0.100, True)),  # 10-01 thru 01-01
+            trans('2024-04-15', calc_pref(0.100, True)),  # 01-01 thru 04-01
+            trans('2024-07-15', calc_pref(0.100, True)),  # 04-01 thru 07-01
 
             # 6th year
-            trans('2024-10-15', calc_pref(0.010, True)),  # 07-01 thru 10-01
-            trans('2025-01-15', calc_pref(0.010, True)),  # 10-01 thru 01-01
-            trans('2025-04-15', calc_pref(0.010, True)),  # 01-01 thru 04-01
-            trans('2025-07-15', calc_pref(0.010, True)),  # 04-01 thru 07-01
+            trans('2024-10-15', calc_pref(0.100, True)),  # 07-01 thru 10-01
+            trans('2025-01-15', calc_pref(0.100, True)),  # 10-01 thru 01-01
+            trans('2025-04-15', calc_pref(0.100, True)),  # 01-01 thru 04-01
+            trans('2025-07-15', calc_pref(0.100, True)),  # 04-01 thru 07-01
 
             # 7th year
-            trans('2025-10-15', calc_pref(0.010, True)),  # 07-01 thru 10-01
-            trans('2026-01-15', calc_pref(0.010, True)),  # 10-01 thru 01-01
-            trans('2026-04-15', calc_pref(0.010, True)),  # 01-01 thru 04-01
-            trans('2026-07-15', calc_pref(0.010, True)),  # 04-01 thru 07-01
+            trans('2025-10-15', calc_pref(0.100, True)),  # 07-01 thru 10-01
+            trans('2026-01-15', calc_pref(0.100, True)),  # 10-01 thru 01-01
+            trans('2026-04-15', calc_pref(0.100, True)),  # 01-01 thru 04-01
+            trans('2026-07-15', calc_pref(0.100, True)),  # 04-01 thru 07-01
             ]
+
+        print(pref_table_raw)
+        # Merge payments that happen on the SAME day, to clean up the data a bit.
+        prev_date = 0
+        prev_index = -1
+        self.pref_table = []
+        for row in pref_table_raw:
+            if row.date == prev_date:
+                self.pref_table[prev_index].amount += row.amount
+            else:
+                self.pref_table.append(row)
+                prev_date = row.date
+                prev_index += 1
+
+        print(self.pref_table)
+
+        #TEMPORARY
+        import datetime as dt
+        import matplotlib.pyplot as plt
+        # https://stackoverflow.com/questions/48439005/pycharm-jupyter-interactive-matplotlib/48695728
+        #import matplotlib
+        #matplotlib.use('Qt5Agg')
+        #import Matplotlib.pyplot as plt
+
+        x = [ dt.datetime.strptime(i.date, '%Y-%m-%d') for i in self.pref_table ]
+        y = [float(i.amount) for i in self.pref_table]
+        plt.plot(x,y, '.-r')
+        plt.ylim([0, 4000])
+        plt.show()
+
 
 
         #OLD BELOW HERE!!!
-        self._interest_monthly = float(interest_rate)/12
-        self._length_months = int(length_years * 12)
-        self._initial_loan_amount = dollar(loan_amount) # ToDo: remove _???
-        self.start_date = start_date
-        self.principal = loan_amount # dollar(loan_amount)
-        self.payment_number = 0
-        print("{} {} {}".format(self._interest_monthly, self._length_months, float(dollar(loan_amount))))
-        self.monthly_payment_amt = np.pmt(self._interest_monthly, length_years * 12,
-                                          float(dollar(loan_amount)))
-        self.amort_table_interest = np.ipmt(self._interest_monthly,
-                                            range(1, self._length_months+1),
-                                            length_years * 12,
-                                            float(dollar(loan_amount)))
-        self.amort_table_principal = np.ppmt(self._interest_monthly,
-                                            range(1, self._length_months+1),
-                                             self._length_months,
-                                            float(dollar(loan_amount)))
-        print("Monthly payment is: {}".format(self.monthly_payment_amt))
-        print("Interest and Principal: {} {}".format(self.amort_table_interest, self.amort_table_principal))
 
         #Setup simpy
         self.env = env
         self.period_days = 30
 
         # Create a "process" that knows how to calculate the next monthly payment.
-        self.mortgage_process = env.process(self.monthly_payment())
+        #self.mortgage_process = env.process(self.monthly_payment())
 
         # Create dataframe to store the history of this particular account.
         # NOTE: should have some "standard" columns (date, comment, amt) so can easily combine with OTHER
@@ -391,44 +402,13 @@ class Inv_03l_SchneidersSaddlery(object):
         # columns = ["date","princ_pay","int_pay","extra_fee_pay","balance"]
         # init_data = [pd.Timestamp(start_date), dollar(0), dollar(0), dollar(0), dollar(loan_amount)]
         # TODO: maybe initialize from something besides a dict, to control the column order better?
-        self.mort_account = pd.DataFrame({
-            "date": [pd.Timestamp(start_date)], # Make a list, so at least one element is non-scalar! Pandas error otherwise.
-            "princ_pay": dollar(0),
-            "int_pay": dollar(0),
-            "extra_fee_pay": dollar(0),
-            "balance": dollar(loan_amount)
-        })
-
-        print self.mort_account
-        #raise("testing")
-
-    #ToDo: HOW to handle float * Decimal calculations?
-        # Convert back to decimal ONLY when displaying results (trim to 2 digits).
-        # OR, is it better to do the calculations in Decimal, and convert floats to Decimal BEFORE doing calcs?
-        # I guess readup on decimal some more later (just get it prototyped for now).
-
-    def monthly_payment(self):
-
-
-
-# TODO: Get decimals working right!
-
-dt = datetime.date.today()
-
-
-# This is a "naive" timestamp, i.e. everything in GMT.
-# I don't think any calculations right now should depend on timezones, so this seems "fine".
-# dt = datetime.date.today()
-
-# Convert from datetime to epoch timestamp
-# timestamp = (dt - datetime.datetime(1970, 1, 1)).total_seconds()
-
-# def house_buy(price, closing_costs, ):
-#     # Probably keep these OUT of the mortgage (although they are often lumped in with it, as bank wants to control it).
-#     # Property_tax
-#     # Insurance
-#     # HOA
-#     pass
+        # self.mort_account = pd.DataFrame({
+        #     "date": [pd.Timestamp(start_date)], # Make a list, so at least one element is non-scalar! Pandas error otherwise.
+        #     "princ_pay": dollar(0),
+        #     "int_pay": dollar(0),
+        #     "extra_fee_pay": dollar(0),
+        #     "balance": dollar(loan_amount)
+        # })
 
 
 env = simpy.Environment(initial_time=timestamp(datetime.date.today()))
@@ -439,4 +419,5 @@ env = simpy.Environment(initial_time=timestamp(datetime.date.today()))
 #     loan_amount=100000, length_years=15, interest_rate=0.04,
 #     private_mortgage_insur=0.0, )
 env.run()
-print ("Done!!!")
+a = Inv_03l_SchneidersSaddlery()
+print("Done!!!")
