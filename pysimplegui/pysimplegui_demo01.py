@@ -1,8 +1,8 @@
 
 # main demo, from https://github.com/PySimpleGUI/PySimpleGUI
 
-#import PySimpleGUI as sg
-import PySimpleGUIQt as sg
+import PySimpleGUI as sg
+#import PySimpleGUIQt as sg
 
 layout = [[sg.Text('All graphic widgets in one window!', size=(30, 1),
                    font=("Helvetica", 25), text_color='blue')],
