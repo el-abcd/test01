@@ -25,13 +25,15 @@ fruit_sales = pd.DataFrame(data=[[35,21],[41,34]],
 ingredients = pd.Series(['4 cups','1 cup', '2 large', '1 can'],
                         index=['Flour','Milk','Eggs','Spam'], name='Dinner')
 
-reviews = pd.read_csv('../input/wine-reviews/winemag-data_first150k.csv', index_col=0)
+#reviews = pd.read_csv('../input/wine-reviews/winemag-data_first150k.csv', index_col=0)
 #NOTE: read_csv, NOT from_csv.
 #NOTE: index_col, NOT index!
 
 #print(dir(animals))
-animals.to_csv('cows_and_goats.csv')
+# animals.to_csv('cows_and_goats.csv')
 #NOTE: to_csv is on the  data frame!
+
+fruit_sales.iloc[0]
 
 ####
 import sqlite3
@@ -39,6 +41,7 @@ conn = sqlite3.connect('../input/pitchfork-data/database.sqlite')
 #print(dir(sqlite3))
 music_reviews = pd.read_sql_query('select * from artists', conn)
 
+music_reviews.iloc[0]
 ###
 # second lesson.  https://www.kaggle.com/eleeabcd/exercise-indexing-selecting-assigning/edit
 # reference: https://www.kaggle.com/residentmario/indexing-selecting-assigning
@@ -75,6 +78,87 @@ first_description = reviews.description.iloc[0]
 # isnull notnull
 
 # Can assign a value (to all rows).  Or, an iterable.
+
+# NOTE: iloc takes a bracket format!!! How?
+#  https://stackoverflow.com/questions/46176656/why-how-does-pandas-use-square-brackets-with-loc-and-iloc
+# The square brackets are syntactic sugar for the special method __getitem__. All objects can implement this method in their class definition and then subsequently work with the square brackets.
+
+# Note: This one took me some time.
+# sample_reviews = reviews.loc[[1,2,3,5,8]]
+# brackets, then syntax hiccups, forgot loc, etc!
+
+# tricky again...
+# iloc, MUST BE INTS!  No names...
+# but loc can use names!
+# remember offset by 1!
+# df = reviews.loc[0:99, ['country','variety']]
+# OR cols_idx = [0, 11]
+# df = reviews.iloc[:100, cols_idx]
+
+# Got it right away.  Seems surprising (but easy) that filter can be first parameter passed in.
+# Even simpler than iloc.
+# italian_wines = reviews[reviews.country == 'Italy']
+
+# top_oceania_wines = reviews[ (reviews.country.isin(['Australia','New Zealand'])) & (reviews.points >= 95) ]
+# NOTE: needed the paren around the filter conditions!!! Else was evaluated wrong!
+
+## read pandas docs a bit.
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-view-versus-copy
+# These both yield the same results, so which should you use? It is instructive to understand the order of operations on these and why method 2 (.loc) is much preferred over method 1 (chained []).
+# Summary: avoid [][].
+
+####
+# Part 3, Summary Functions and Maps!
+##
+# https://www.kaggle.com/eleeabcd/exercise-summary-functions-and-maps/edit
+
+# NOTE describe
+# NOTE: mean(), unique(), value_counts (count, by how common?)
+# Series.map() functions...
+# DataFrame.apply(), can call a custom method per ROW.  Looks like might do 'in place'?
+
+# pandas will handle a series and a single value (apply to all).
+# Faster than map or apply, use internal optimizations!
+# map and apply can do more complex things, though.
+
+# countries = reviews.country.unique()
+# print(reviews.country.value_counts())
+
+# centered_price = reviews.price - reviews.price.mean()
+# Nice!  simple!
+
+
+# bargain wine.  Am suspicious of using a 80-100 scale, 2x more costly but 1 more point?  Hard to get 2x more points...
+# print((reviews.points / reviews.price).idxmax())
+# bargain_wine = reviews.iloc[(reviews.points / reviews.price).idxmax()].title
+# NOTE: Series.idxmax() method.
+
+# Counts of a string occurring...
+    # num_tropical = reviews.description.str.contains('tropical').sum()
+    # num_fruity = reviews.description.str.contains('fruity').sum()
+    #
+    # descriptor_counts = pd.Series([num_tropical, num_fruity], index=['tropical','fruity'])
+    # print(descriptor_counts)
+# NOTE: NEED to use str in it, CAN'T just use contains on a string object (it seems).
+
+# Try their way ALSO.  Use Series.map.
+
+# nice little apply example...
+    # def stars(row):
+    #     if row.country == 'Canada':
+    #         return 3
+    #     else:
+    #         if row.points >= 95:
+    #             return 3
+    #         elif row.points >= 85:
+    #             return 2
+    #         else:
+    #             return 1
+    #
+    # star_ratings = reviews.apply(stars, axis = 'columns')
+
+
+
 
 
 
