@@ -1,8 +1,10 @@
-from inv_baseClass import Transact, calc_pref
+from inv_baseClass import Transact, calc_pref, inv_base
 import datetime
 from dateutil.relativedelta import relativedelta # pip install python-dateutil
+import matplotlib.pyplot as plt
+import pandas as pd
 
-class Inv_PPR_todo_cleanup(object):
+class Inv_02ac_PPR_Reliant(inv_base):
     """Simpy process to simulate investment.
 
     ToDo: Perhaps extract into text format, in a text input file?
@@ -17,17 +19,22 @@ class Inv_PPR_todo_cleanup(object):
         TBD
     """
 
-    def __init__(self):
-        """Info for 02ac_PPR_Reliant-10%-3yr_1908-2208
-
-
+    @property
+    def description(self):
+        #ToDo: remove leading spaces on additional lines.  Add more content?
+        a = '''Info for 02ac_PPR_Reliant-10%-3yr_1908-2208
         References:
             Google Drive folder:
                 https://drive.google.com/drive/folders/1nia_IyhUybJYDjyzQrIvj4ZbhkpDyzwU?usp=sharing
+        '''
+        return a
 
-        Returns:
-            NA
-        """
+    def __init__(self):
+        #composition
+        self.base = inv_base(
+            short_name='PPR_350'
+            , description='02ac_PPR_Reliant-10%-3yr_1908-2208_tmpltV06_350k'
+        )
 
         # WT SEQ160752 RELIANT INCOME FUND LLC /BNF=RELIANT INCOME FUND LLC SRF# 0000257242264277 TRN#190830160752 RFB#
         self.start_date = datetime.date(2019, 8, 30)
@@ -71,14 +78,30 @@ class Inv_PPR_todo_cleanup(object):
         #print(self.pref_table)
 
 
-        import matplotlib.pyplot as plt
-        # https://stackoverflow.com/questions/48439005/pycharm-jupyter-interactive-matplotlib/48695728
+        # Create a dataframe...
+        x = [i.date for i in self.pref_table]
+        # ToDo: https://beepscore.com/website/2018/10/12/using-pandas-with-python-decimal.html#targetText=in%20Pandas,be%20another%20type%20like%20Decimal.
 
-        x = [ i.date for i in self.pref_table ]
         y = [float(i.amount) for i in self.pref_table]
-        plt.plot(x ,y, '.-r')
-        plt.ylim([0, 4000])
-        plt.show()
 
+        self.df = pd.DataFrame()
+        self.df['dates'] = pd.to_datetime(x)
+        self.df['amt'] = y
+        # Add a column with the same value per row...
+        self.df['inv_name'] = self.base.short_name
 
-a = Inv_PPR_todo_cleanup()
+        self.df = self.df.set_index('dates')
+
+if __name__ == '__main__':
+
+    a = Inv_02ac_PPR_Reliant()
+
+    # https://stackoverflow.com/questions/48439005/pycharm-jupyter-interactive-matplotlib/48695728
+    x = [i.date for i in a.pref_table]
+    y = [float(i.amount) for i in a.pref_table]
+    plt.plot(x, y, '.-r')
+    plt.ylim([0, 4000])
+    plt.show()
+
+    print(a.description)
+

@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 
 .idea
+/python3_virtenv/

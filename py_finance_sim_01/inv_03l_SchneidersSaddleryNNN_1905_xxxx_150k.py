@@ -1,7 +1,9 @@
-from inv_baseClass import Transact, calc_pref
+from inv_baseClass import Transact, calc_pref, inv_base
 import datetime
+import pandas as pd
 
-class Inv_03l_SchneidersSaddleryNNN(object):
+
+class Inv_03l_SchneidersSaddleryNNN(inv_base):
     """Simpy process to simulate investment.
 
     ToDo: Perhaps extract into text format, in a text input file?
@@ -17,6 +19,11 @@ class Inv_03l_SchneidersSaddleryNNN(object):
     """
 
     def __init__(self):
+        #composition
+        self.base = inv_base(
+            short_name='Schn_150'
+            , description='Schneider Saddlery NNN, ...'
+        )
         # , start_date=datetime.date.today(),
         #              loan_amount=100000, length_years=15, interest_rate=0.04,
         #              private_mortgage_insur=0.0, ):
@@ -193,44 +200,31 @@ class Inv_03l_SchneidersSaddleryNNN(object):
 
         # print(self.pref_table)
 
-        # TEMPORARY plotting.
 
-        import matplotlib.pyplot as plt
-        # https://stackoverflow.com/questions/48439005/pycharm-jupyter-interactive-matplotlib/48695728
-        # import matplotlib
-        # matplotlib.use('Qt5Agg')
-        # import Matplotlib.pyplot as plt
-
+        # Create a dataframe...
         x = [i.date for i in self.pref_table]
-        y = [float(i.amount) for i in self.pref_table]
-        plt.plot(x, y, '.-r')
-        plt.ylim([0, 4000])
-        plt.show()
-
-        print('Start plotting...')
-        df = pd.DataFrame()
-        df['dates'] = pd.to_datetime(x)
-        df.index = df['dates']
-
         # ToDo: https://beepscore.com/website/2018/10/12/using-pandas-with-python-decimal.html#targetText=in%20Pandas,be%20another%20type%20like%20Decimal.
-        df['03l_Schn'] = y
-        y2 = df.resample('Q').sum()
-        plt.plot(y2)
-        plt.show()
 
-        y3 = y2.cumsum()
-        plt.plot(y3)
-        plt.show()
+        y = [float(i.amount) for i in self.pref_table]
+        #To compare to other investments (estimate avg. monthly income) it might be nice to smooth this into monthly payments.
+        #y_monthly =
 
-        # OK, have resampled by quarter!
-        # How to resample by month and show in a reasonable way?
-        # How to do cumulative plots?
+        self.df = pd.DataFrame()
+        self.df['dates'] = pd.to_datetime(x)
+        self.df['amt'] = y
+        # Add a column with the same value per row...
+        self.df['inv_name'] = self.base.short_name
 
+        #self.df.index = self.df['dates']
+        self.df = self.df.set_index('dates')
+        self.base.is_quarterly = True
+
+        #print('debug')
         # OLD BELOW HERE!!!
 
         # Setup simpy
-        self.env = env
-        self.period_days = 30
+        #self.env = env
+        #self.period_days = 30
 
         # Create a "process" that knows how to calculate the next monthly payment.
         # self.mortgage_process = env.process(self.monthly_payment())
@@ -252,3 +246,38 @@ class Inv_03l_SchneidersSaddleryNNN(object):
 
 if __name__ == '__main__':
     a = Inv_03l_SchneidersSaddleryNNN()
+
+    # TEMPORARY plotting.
+    import matplotlib.pyplot as plt
+
+    # https://stackoverflow.com/questions/48439005/pycharm-jupyter-interactive-matplotlib/48695728
+    # import matplotlib
+    # matplotlib.use('Qt5Agg')
+    # import Matplotlib.pyplot as plt
+
+    x = [i.date for i in a.pref_table]
+    y = [float(i.amount) for i in a.pref_table]
+    plt.plot(x, y, '.-r')
+    plt.ylim([0, 4000])
+    plt.show()
+
+    print('Start plotting...')
+    df = pd.DataFrame()
+    df['dates'] = pd.to_datetime(x)
+    df.index = df['dates']
+
+    # ToDo: https://beepscore.com/website/2018/10/12/using-pandas-with-python-decimal.html#targetText=in%20Pandas,be%20another%20type%20like%20Decimal.
+    df['03l_Schn'] = y
+    y2 = df.resample('Q').sum()
+    plt.plot(y2)
+    plt.show()
+
+    y3 = y2.cumsum()
+    plt.plot(y3)
+    plt.show()
+
+    # OK, have resampled by quarter!
+    # How to resample by month and show in a reasonable way?
+    # How to do cumulative plots?
+
+    #print(a.description)
