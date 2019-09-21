@@ -28,7 +28,7 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
         #composition
         self.base = inv_base(
             short_name='Brand_200'
-            , description=description
+            , description=self.description
         )
 
         # 190920_ConfirmationLetter_Open Door Capital Fund - Welcome Letter - Eric Lee.pdf
@@ -54,9 +54,9 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
         # 190902_#PPM+Open+Door+Capital+Fund w highlights copy.pdf
         #
         # Distributable Cash, if any, derived from operation of the Properties will be evaluated on a quarterly basis starting one (1) year after operations commence, and disbursed as provided below until expended.
-        # • First, the Class A Members will receive an annualized, non-cumulative, non- compounding Preferred Return of eight percent (8%) on their unreturned Capital Contributions.
-        # • Second, the Class A Members will receive, together with their Preferred Return, seventy percent (70%) of the Distributable Cash, pro rata, in accordance with their Percentage Interests and the Class B Members shall receive thirty percent (30%) of the Distributable Cash, pro rata in accordance with their Percentage Interests until the Class A Members have reached a fifteen percent (15%) IRR.
-        # • Thereafter, the Class A Members will receive fifty percent (50%) of the Distributable Cash, pro rata, in accordance with their Percentage Interests and the Class B Members shall receive fifty percent (50%) of the Distributable Cash, pro rata, in accordance with their Percentage Interests.
+        # First, the Class A Members will receive an annualized, non-cumulative, non- compounding Preferred Return of eight percent (8%) on their unreturned Capital Contributions.
+        # Second, the Class A Members will receive, together with their Preferred Return, seventy percent (70%) of the Distributable Cash, pro rata, in accordance with their Percentage Interests and the Class B Members shall receive thirty percent (30%) of the Distributable Cash, pro rata in accordance with their Percentage Interests until the Class A Members have reached a fifteen percent (15%) IRR.
+        # Thereafter, the Class A Members will receive fifty percent (50%) of the Distributable Cash, pro rata, in accordance with their Percentage Interests and the Class B Members shall receive fifty percent (50%) of the Distributable Cash, pro rata, in accordance with their Percentage Interests.
         # For the purposes of Cash Distribution calculations only, Cash Distributions to Class A and Class B Members from operations will be treated as a return on investment.
 
         # So, assume nothing until the end of the first year.  Then 7.1% (catchup?)  Then keep earning at that rate, until a refi, then pref will drop...(mgr percent goes up)
@@ -98,8 +98,11 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
 
         self.df = self.df.set_index('dates')
 
+        print('DONE!!!!!')
+
 if __name__ == '__main__':
 
+    print('START')
     a = Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k()
 
     # https://stackoverflow.com/questions/48439005/pycharm-jupyter-interactive-matplotlib/48695728
