@@ -36,7 +36,7 @@ class Inv_02ac_PPR_Reliant(inv_base):
             , description='02ac_PPR_Reliant-10%-3yr_1908-2208_tmpltV06_350k'
         )
 
-        # WT SEQ160752 RELIANT INCOME FUND LLC /BNF=RELIANT INCOME FUND LLC SRF# 0000257242264277 TRN#190830160752 RFB#
+        # Bank transaction record:  WT SEQ160752 RELIANT INCOME FUND LLC /BNF=RELIANT INCOME FUND LLC SRF# 0000257242264277 TRN#190830160752 RFB#
         self.start_date = datetime.date(2019, 8, 30)
         self.inv_initial = 350000
         self.capital_account = self.inv_initial  # Start at initial investment amount.

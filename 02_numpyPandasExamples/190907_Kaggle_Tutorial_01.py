@@ -157,6 +157,34 @@ first_description = reviews.description.iloc[0]
     #
     # star_ratings = reviews.apply(stars, axis = 'columns')
 
+######################
+# https://www.kaggle.com/eleeabcd/exercise-grouping-and-sorting/edit
+
+#Read the cheatsheet.
+#expanding window, basically cumsum!  Each step increase window size!
+
+# reference:  https://www.kaggle.com/residentmario/grouping-and-sorting
+# This DataFrame is accessible to us directly using the apply method
+#  So, it sounds like they create many "sub dataframmes" for each grouping.
+# the "apply" lets you access each of those?
+
+# Use 'series.values.argmax' to get the position of the maximum now.
+# argmax!!!!
+
+# .agg([len, min, max])
+# Can do several agg's in parallel!!!'
+# multi-index.
+# groupby(['country','province']).
+# pandas.core.indexes.multi.MultiIndex
+
+# They also require two levels of labels to retrieve a value, an operation that looks something like this
+# reset_index will reset back to normal index.
+
+# <pandas.core.groupby.generic.DataFrameGroupBy object at 0x7f2ba75b6588>
+# So a groupby does NOT produce a dataFrame directly, but a groupby object.
+# You need to do some further operation to get a series, it seems!  A size,
+
+
 
 
 
