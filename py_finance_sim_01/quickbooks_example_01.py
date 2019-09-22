@@ -1,6 +1,6 @@
 
 from intuitlib.client import AuthClient
-from quickbooks_id_encrypted import client_id, client_secret, redirect_uri, environment
+from quickbooks_id_encrypted import client_id, client_secret, redirect_uri, environment, realm_id, oauth2_token_from_auth
 
 # Store credentials in here (not sure which are secret, but just assume they are).
 # Try using git-crypt to store these in the repo.
