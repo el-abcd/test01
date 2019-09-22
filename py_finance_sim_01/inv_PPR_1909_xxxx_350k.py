@@ -35,6 +35,7 @@ class Inv_02ac_PPR_Reliant(inv_base):
             short_name='PPR_350'
             , description='02ac_PPR_Reliant-10%-3yr_1908-2208_tmpltV06_350k'
         )
+        self.base.is_quarterly = None
 
         # Bank transaction record:  WT SEQ160752 RELIANT INCOME FUND LLC /BNF=RELIANT INCOME FUND LLC SRF# 0000257242264277 TRN#190830160752 RFB#
         self.start_date = datetime.date(2019, 8, 30)

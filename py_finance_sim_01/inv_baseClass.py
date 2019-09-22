@@ -174,6 +174,7 @@ class inv_base(object):
             assert( abs(self.df['amt'].sum() - sum(new_list)) <= 0.001 )
 
         b['inv_name'] = self.df.iloc[0]['inv_name']
+        #print(b['inv_name'])
         #Return a dataframe (not just a series, so the inv_name is also there...
         return b #pd.Series(data=new_list, index=b.index)
 

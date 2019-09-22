@@ -24,6 +24,7 @@ class Inv_03l_SchneidersSaddleryNNN(inv_base):
             short_name='Schn_150'
             , description='Schneider Saddlery NNN, ...'
         )
+        self.base.is_quarterly = True
         # , start_date=datetime.date.today(),
         #              loan_amount=100000, length_years=15, interest_rate=0.04,
         #              private_mortgage_insur=0.0, ):
@@ -217,7 +218,6 @@ class Inv_03l_SchneidersSaddleryNNN(inv_base):
 
         #self.df.index = self.df['dates']
         self.df = self.df.set_index('dates')
-        self.base.is_quarterly = True
 
         #print('debug')
         # OLD BELOW HERE!!!

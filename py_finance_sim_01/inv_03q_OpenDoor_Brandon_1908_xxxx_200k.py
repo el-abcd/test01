@@ -13,6 +13,7 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
     Returns:
         TBD
     """
+    #ToDo: Treat "return of capital" separate?  NOT the same as "regular investment returns"...
 
     @property
     def description(self):
@@ -30,6 +31,7 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
             short_name='Brand_200'
             , description=self.description
         )
+        self.base.is_quarterly = True
 
         # 190920_ConfirmationLetter_Open Door Capital Fund - Welcome Letter - Eric Lee.pdf
         self.start_date = datetime.date(2019, 9, 20)
@@ -49,6 +51,7 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
 
         # From: 190902_ODC+Investment+Executive+Summary+V2.0.pdf, p26
         # yearly: 7.1, 10.0, 12.6, 13.4, 15.5, 17.5, 19.3, 21.1. 22.9
+        # Note: projections only cover 9 years.  10th year shows 0.  Assume 22.9 also?
 
         # From the PPM:
         # 190902_#PPM+Open+Door+Capital+Fund w highlights copy.pdf
@@ -69,20 +72,22 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
             Transact('2020-11-15', 0.071 * self.capital_account),  # Full year
         )
 
-        for (year_offset, annual_pref) in enumerate([10.0, 12.6, 13.4, 15.5, 17.5, 19.3, 21.1, 22.9]):
+        # Note: duplicate year 10 (from year 9).
+        for (year_offset, annual_pref) in enumerate([10.0, 12.6, 13.4, 15.5, 17.5, 19.3, 21.1, 22.9, 22.9]):
             # paid quarterly.
             for qtr_offset in range (4): # Remaining quarters
                 self.pref_table.append(
                     Transact(datetime.date(2021, 2, 15) + relativedelta(years=year_offset) + relativedelta(months=qtr_offset*3),
-                             annual_pref/100.0 * self.capital_account) )
+                             annual_pref/(4*100.0) * self.capital_account) )
 
 
-        # Final cashout.
+        # Final cashout.  Assume a sale at this point?
+        # IF double in value in 10 years, then about 7.2 IRR.  Guess about 10% IRR from cashflow?
         self.pref_table.append(
-            Transact('2022-10-01', calc_pref(0.100, self.capital_account, False, '2022-09-01', '2022-09-06', 365)),  # Partial month
+            Transact('2029-11-16', 2.0* self.capital_account),
         )
-        #print(self.pref_table)
 
+        #print(self.pref_table)
 
         # Create a dataframe...
         x = [i.date for i in self.pref_table]
@@ -97,7 +102,9 @@ class Inv_inv_03q_OpenDoor_Brandon_1908_xxxx_200k(inv_base):
         self.df['inv_name'] = self.base.short_name
 
         self.df = self.df.set_index('dates')
+        #print(self.df)
 
+        #ToDo: return decimal types?
         print('DONE!!!!!')
 
 if __name__ == '__main__':
@@ -109,7 +116,7 @@ if __name__ == '__main__':
     x = [i.date for i in a.pref_table]
     y = [float(i.amount) for i in a.pref_table]
     plt.plot(x, y, '.-r')
-    plt.ylim([0, 4000])
+    plt.ylim([0, 20000])
     plt.show()
 
     print(a.description)
