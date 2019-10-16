@@ -29,6 +29,15 @@ class Inv_02ac_PPR_Reliant(inv_base):
         '''
         return a
 
+# Todo: Somehow add this into tax info in the future.  Don't originate loans, so NOT a trade/business?
+'''
+    INTERESTING, MAYBE THIS IS HOW DEBT FUNDS CAN REPORT IN BOX 1 OF K-1, AND NOT AT INTEREST INCOME?  
+
+ Fund is not a REIT. K1 is issued, not 1099. Investing in NPLs is not treated as ongoing trade or business. 
+ No NYC or NYS tax. If they were originating loans, that would be a trade or business. 
+ Buying loans made by others is not a trade or business. Interesting nuance.
+'''
+
     def __init__(self):
         #composition
         self.base = inv_base(
