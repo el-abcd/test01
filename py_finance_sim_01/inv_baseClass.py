@@ -134,6 +134,15 @@ class inv_base(object):
     #def description(self):
         #raise NotImplementedError('Subclasses should implement this')
 
+    #ToDo: Create a template for a "pref plot", i.e. a curve that shows what
+    # investors get (and the waterfall).  i.e. project does 30%, we get x?
+    # Some will be tricky (compounding).  Maybe show that case (example of no payout for a while vs 10%).
+    # i.e. ideally have some "example" that shows the benefit of that...
+    # NEed to show "over time" to see compounding I think.  Could show "what happens if 0% project pref for awhile"
+    # and show the value of the accumulated pref (i.e. in yellow, etc.) and then the final waterfall amounts (more goes to investor with compoounding I think).
+    # GOAL: have some way to compare the waterfalls of various investments.
+
+
     def quarterly_to_month_end(self):
         """Convert quarterly payments to equivalent ones
 
